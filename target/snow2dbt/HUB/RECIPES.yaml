@@ -1,0 +1,15 @@
+models:
+- name: RECIPES
+  description: ''
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: RECIPE_ID
+    data_type: NUMBER(38,0)
+  - name: INDEX_TAG_ON_RECIPE
+    data_type: NUMBER(38,0)
+  - name: ENGLISH_TAG
+    data_type: VARCHAR(16777216)
+  - name: FRENCH_TAG
+    data_type: VARCHAR(16777216)
