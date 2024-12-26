@@ -4,7 +4,6 @@
 
 <h1 style="text-align:center;">Snow2dbt</h1>
 
-
 <h2 style="text-align:center; font-style: italic;">Command Line to reverse engineering a Snowflake Table to DBT model and SQL</h2>
 
 
@@ -59,9 +58,23 @@ If you want to use a standard authentification to Snowflake, you can specify fol
 
 ### 3. Reversing a Snowflake Table into model/contract
 
+*Exempleù
 
 ```bash
 
 snow2dbt --target <databse>.<schema>.<table>
 
 ```
+
+**CLI arguments**
+
+| Option                | Description                                                                             |
+|-----------------------|-----------------------------------------------------------------------------------------|
+| `-l`, `--lower`       | Output type names as lowercase in YAML file                                             |
+| `--snake`             | Convert field names to snake_case                                                       |
+| `--prefix`            | Prefix to add to columns names (default: None)                                          |
+| `--suffix`            | Suffix to add to column names (default: None)                                           |
+| `--output`            | Destination folder for scripts. (default: target/bq2dbt)                                |
+| `--empty_description` | Add empty description property to YAML file if field description is empty (placeholder) |
+| `--tabs`              | Use tabs instead of 4 spaces in SQL file indentation                                    |
+| `--leading_comma`     | Put comma at the start of line in SQL file column list instead of end of line           |
