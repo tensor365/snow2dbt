@@ -49,7 +49,7 @@ If you want to use a standard authentification to Snowflake, you can specify fol
 
     Not available yet. Incoming soon
 
-    ```bash 
+    ```bash
 
     --account <snowflake_accountname>
     --key <snowflake_private_key>
@@ -58,7 +58,6 @@ If you want to use a standard authentification to Snowflake, you can specify fol
 
 ### 3. Reversing a Snowflake Table into model/contract
 
-*Exempleù
 
 ```bash
 
