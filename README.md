@@ -1,9 +1,12 @@
-<img src="img/dbt.png" alt="dbtIcon" width="100" height="45" margin="auto" display="block"><br>
+<p align="center" style="vertical-align:center;">
+    <img src="img/dbt.png" alt="dbtIcon" width="75" height="35" margin="auto" display="block"><br>
+</p>
 
-# Snow2dbt
+<h1 style="text-align:center;">Snow2dbt</h1>
 
 
-## Command Line to reverse engineering a Snowflake Table to DBT model and SQL
+<h2 style="text-align:center; font-style: italic;">Command Line to reverse engineering a Snowflake Table to DBT model and SQL</h2>
+
 
 Be careful this tool is under development. There's no stable release yet.
 
@@ -25,28 +28,34 @@ pip install https://github.com/tensor365/snow2dbt
 ### 2. Authentication
 
 
-• Dbt SSO
+**Dbt SSO**
 
 If you have already a Snowflake Connection in your profile.yml , snow2dbt will use this identity to connect to your Snowflake tenant. If you've multiple identity in your profile.yml, you can specify the profile you want by using the argument: --profile . 
 
-• Standard Authentication
+**Standard Authentication**
 
 If you want to use a standard authentification to Snowflake, you can specify following arguments: 
 
-• Password Authentication
+    • Password Authentication
 
-```bash 
+    ```bash 
 
---account: <snowflake_accountname>
---user: <snowflake_user>
---password: <snowflake_password> 
+    --account <snowflake_accountname>
+    --user <snowflake_user>
+    --password <snowflake_password> 
 
-```
+    ```
 
-• Keypair Authentication
+    • Keypair Authentication
 
-Incoming soon
+    Not available yet. Incoming soon
 
+    ```bash 
+
+    --account <snowflake_accountname>
+    --key <snowflake_private_key>
+
+    ```
 
 ### 3. Reversing a Snowflake Table into model/contract
 
