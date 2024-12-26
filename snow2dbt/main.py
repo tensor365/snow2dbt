@@ -134,8 +134,6 @@ def main():
     #authenticator=authentificator,
     )
 
-    print(conn)
-
     #Getting information about table
     
     tableInfoRequest = f"""SELECT * 
@@ -154,8 +152,6 @@ def main():
     fields = list()
     for row in columnInfoResult:
         fields.append(dict(zip(columnInfoColumn,row)))
-    print(fields)
-
 
     # Generating default model
     yaml_data = {
@@ -176,7 +172,18 @@ def main():
     #Generating columns contracts
     columns = list()
     for field in fields:
-        fieldset = {'name': field['name'], 'data_type':field['type']}
+        name = field['name']
+
+        if args['suffix'] is None:
+            name = name + args['suffix']
+        if args['prefix'] is None:
+            name = args['prefix'] + name
+        if args['lower'] or args['l']:
+            name = name.lower()
+        if args['snake']:
+            name = snake_case(name)
+        
+        fieldset = {'name': name, 'data_type':field['type']}
         constraints = list()
         if field['primary key'] == 'Y':
             constraints.append({'type':'primary_key'})
