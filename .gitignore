@@ -1,4 +1,4 @@
 target/
-sdist/
+dist/
 build/
 snow2dbt.egg-info/
