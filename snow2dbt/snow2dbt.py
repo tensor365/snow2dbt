@@ -68,7 +68,7 @@ def retrieve_profile_path():
         if file == 'profiles.yml':
             return os.path.join(profiltePath, 'profiles.yml')
 
-def main():
+def snow2dbt():
     """
     
     Executing serializer from Snowflake to DBT Contract
@@ -77,15 +77,14 @@ def main():
 
     args = parser_cmd()
 
-    print(args)
-
-
     if args.target:
         
         database, schema, table = args.target.split('.')
     else:
         logger.error("Invalid Snowflake table reference. <database>.<schema>.<table>")
         sys.exit(1)
+
+    leadingComma = args.leading_comma
 
     if args.auth_mode:
         if args.auth_mode == "dbt":
@@ -118,12 +117,6 @@ def main():
     else:
         logger.error("Invalid Auth Mode used")
         sys.exit(1)
-
-
-    # if args['prefix'] is not None:
-    
-    # if args['suffix']:
-    #     logger.error("Invalid Snowflake table reference. <database>.<schema>.<table>")
 
     #Generating Snowflake Client
 
@@ -174,13 +167,13 @@ def main():
     for field in fields:
         name = field['name']
 
-        if args['suffix'] is None:
-            name = name + args['suffix']
-        if args['prefix'] is None:
-            name = args['prefix'] + name
-        if args['lower'] or args['l']:
+        if args.suffix:
+            name = name + args.suffix
+        if args.prefix:
+            name = args.prefix + name
+        if args.lower:
             name = name.lower()
-        if args['snake']:
+        if args.snake:
             name = snake_case(name)
         
         fieldset = {'name': name, 'data_type':field['type']}
@@ -202,14 +195,22 @@ def main():
     output_folder = args.output
     output_path = f"./{output_folder}/{schema}/"
     os.makedirs(output_path, exist_ok=True)
-    
+
+    ### Generating SQL format
+    sql_columns_separator = f"\n\t," if leadingComma else f",\n\t" 
+    sql_columns_statement = sql_columns_separator.join([ field['name'] for field in columns])
+    sql_from_statement = f"{database}.{schema}.{table}"
+    sql_output = f"SELECT\n\t{sql_columns_statement}\nFROM{sql_from_statement}"
+    sql_output+=f"\n -- Replace by a ref() or source() value"
+
     with open(f"{output_path}/{table}.yaml", "w", encoding="utf-8") as yaml_file:
             yaml_file.write(yaml_output)
 
-    sys.exit(0)
+    with open(f"{output_path}/{table}.sql", "w", encoding="utf-8") as sql_file:
+            sql_file.write(sql_output)
     
     logger.info("YAML and SQL files wrote in path: %s", output_path)
     logger.info(f"Reversing Table {schema}.{table} into model has been completed")
 
 if __name__ == "__main__":
-    main()
+    snow2dbt()
