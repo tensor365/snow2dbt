@@ -209,7 +209,7 @@ def snow2dbt():
     with open(f"{output_path}/{table}.sql", "w", encoding="utf-8") as sql_file:
             sql_file.write(sql_output)
     
-    logger.info("YAML and SQL files wrote in path: %s", output_path)
+    logger.info("YAML and SQL files written at path: %s", output_path)
     logger.info(f"Reversing Table {schema}.{table} into model has been completed")
 
 if __name__ == "__main__":
