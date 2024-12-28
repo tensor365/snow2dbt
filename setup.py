@@ -4,7 +4,7 @@ name='snow2dbt',
 version='0.1.0',
 author='Tensor',
 author_email='clementparsy02@gmail.com',
-description='A short description of your package',
+description='Command Line to reverse engineering a Snowflake Table to DBT Model file',
 packages=find_packages(),
 classifiers=[
 'Programming Language :: Python :: 3',
