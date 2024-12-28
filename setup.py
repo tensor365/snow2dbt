@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
 name='snow2dbt',
-version='0.1.0',
+version='0.2.0',
 author='Tensor',
 author_email='clementparsy02@gmail.com',
 description='Command Line to reverse engineering a Snowflake Table to DBT Model file',
