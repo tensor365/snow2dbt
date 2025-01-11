@@ -37,6 +37,7 @@ def parser_cmd():
     parser.add_argument("--profile", help="DBT profile to used for authentification (Only  in auth_mode: dbt). If no profile, it'll take the first one in yaml config", default=None)
     parser.add_argument("--target", help="Complete Snowflake table ID (<database>.<schema>.<table>)")
     parser.add_argument("-l", "--lower", action="store_true", help="Lowercase type names in YAML file")
+    parser.add_argument("--leading_comma", action="store_true", help="Leading comma")
     parser.add_argument("--snake", action="store_true", help="Convert field names to snake_case")
     parser.add_argument("--description", action="store_true",
                         help="Include empty description property in YAML file", default='')

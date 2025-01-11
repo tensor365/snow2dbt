@@ -80,5 +80,6 @@ snow2dbt --target <databse>.<schema>.<table>
 | `--output`            | Destination folder for scripts. (default: target/bq2dbt)                                |
 | `--description`       | Description of the table reversed                                                       |
 | `--auth_mode`         | Authentification mode used to handle connection to Snowflake                            |
+| `--leading_comma`     | Adding Leading Comma in front of each field                                             |
 
 
