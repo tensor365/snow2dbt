@@ -81,3 +81,10 @@ snow2dbt --target <databse>.<schema>.<table>
 | `--description`       | Description of the table reversed                                                       |
 | `--auth_mode`         | Authentification mode used to handle connection to Snowflake                            |
 | `--leading_comma`     | Adding Leading Comma in front of each field                                             |
+
+### 4. Road Map
+
+## In development
+
+[] February 2024: adding the capability to reverse entire schema
+[] February/March 2024: adding the capability to generate SQL file by using Snowflake Lineage
