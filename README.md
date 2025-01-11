@@ -72,7 +72,7 @@ snow2dbt --target <databse>.<schema>.<table>
 | `--account`           | Snowflake Account Name                                                                  |
 | `--username`          | Snowflake Username                                                                      |
 | `--profile`           | DBT profile used to handle authentification                                             |
-| `--target`            | Target table (<database>.<schema>.<table>)                                              |
+| `--target`            | Target table <database>.<schema>.<table>                                              |
 | `-l`, `--lower`       | Output type names as lowercase in YAML file                                             |
 | `--snake`             | Convert field names to snake_case                                                       |
 | `--prefix`            | Prefix to add to columns names (default: None)                                          |
@@ -81,5 +81,3 @@ snow2dbt --target <databse>.<schema>.<table>
 | `--description`       | Description of the table reversed                                                       |
 | `--auth_mode`         | Authentification mode used to handle connection to Snowflake                            |
 | `--leading_comma`     | Adding Leading Comma in front of each field                                             |
-
-
