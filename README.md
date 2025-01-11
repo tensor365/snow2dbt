@@ -69,11 +69,16 @@ snow2dbt --target <databse>.<schema>.<table>
 
 | Option                | Description                                                                             |
 |-----------------------|-----------------------------------------------------------------------------------------|
+| `--account`           | Snowflake Account Name                                                                  |
+| `--username`          | Snowflake Username                                                                      |
+| `--profile`           | DBT profile used to handle authentification                                             |
+| `--target`            | Target table (<database>.<schema>.<table>)                                              |
 | `-l`, `--lower`       | Output type names as lowercase in YAML file                                             |
 | `--snake`             | Convert field names to snake_case                                                       |
 | `--prefix`            | Prefix to add to columns names (default: None)                                          |
 | `--suffix`            | Suffix to add to column names (default: None)                                           |
 | `--output`            | Destination folder for scripts. (default: target/bq2dbt)                                |
-| `--empty_description` | Add empty description property to YAML file if field description is empty (placeholder) |
-| `--tabs`              | Use tabs instead of 4 spaces in SQL file indentation                                    |
-| `--leading_comma`     | Put comma at the start of line in SQL file column list instead of end of line           |
+| `--description`       | Description of the table reversed                                                       |
+| `--auth_mode`         | Authentification mode used to handle connection to Snowflake                            |
+
+

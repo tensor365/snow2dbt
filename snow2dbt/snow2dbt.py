@@ -5,6 +5,7 @@ import os
 import yaml
 from re import sub
 import snowflake.connector
+from getpass import getpass
 
 logging.basicConfig(
     level=logging.INFO,
@@ -37,14 +38,12 @@ def parser_cmd():
     parser.add_argument("--target", help="Complete Snowflake table ID (<database>.<schema>.<table>)")
     parser.add_argument("-l", "--lower", action="store_true", help="Lowercase type names in YAML file")
     parser.add_argument("--snake", action="store_true", help="Convert field names to snake_case")
-    parser.add_argument("--empty_description", action="store_true",
-                        help="Include empty description property in YAML file")
+    parser.add_argument("--description", action="store_true",
+                        help="Include empty description property in YAML file", default='')
     parser.add_argument("--prefix", help="Prefix to add to columns names", default=None)
     parser.add_argument("--suffix", help="Suffix to add to column names", default=None)
-    parser.add_argument("--leading_comma", help="Add comma at the start if line in SQL columns ouput", action="store_true")
-    parser.add_argument("--tabs", help="Indent SQL with tabs instead of spaces", action="store_true")
     parser.add_argument("--output", help="Output folder of scripts. By default 'target/snow2dbt'",
-                        default='target/snow2dbt')
+                            default='target/snow2dbt')
     parser.add_argument("--auth_mode", help="Snowflake Authentification used. Default: dbt: will rely on your DBT profile file.", default='dbt')
     return parser.parse_args()
 
@@ -113,7 +112,8 @@ def snow2dbt():
                 
                 account = args.account
                 username = args.username
-                authentificator='externalbrowser'    
+                if args.username is not None and args.account is not None:         
+                    password=getpass()
     else:
         logger.error("Invalid Auth Mode used")
         sys.exit(1)
@@ -124,7 +124,6 @@ def snow2dbt():
     user=username, 
     password=password,
     account=account,
-    #authenticator=authentificator,
     )
 
     #Getting information about table
@@ -151,7 +150,7 @@ def snow2dbt():
     "models": [
         {
             "name": tableInfo['TABLE_NAME'],
-            "description": "",
+            "description": args.description,
             "config": {
                 "contract": {
                     "enforced": True
