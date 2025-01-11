@@ -86,5 +86,5 @@ snow2dbt --target <databse>.<schema>.<table>
 
 ## In development
 
-[] February 2024: adding the capability to reverse entire schema
-[] February/March 2024: adding the capability to generate SQL file by using Snowflake Lineage
+- [ ] February 2024: adding the capability to reverse entire schema
+- [ ] February/March 2024: adding the capability to generate SQL file by using Snowflake Lineage
