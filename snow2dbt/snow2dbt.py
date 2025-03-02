@@ -2,7 +2,7 @@ import argparse
 import logging
 import sys
 import os
-from typing import Dict
+from tabulate import tabulate
 import yaml
 from re import sub
 import snowflake.connector
@@ -77,10 +77,6 @@ def retrieve_profile_path():
         if file == 'profiles.yml':
             return os.path.join(profiltePath, 'profiles.yml')
 
-def list_profile_available() -> Dict:
-    return {}
-
-
 def snow2dbt():
     """
     
@@ -103,10 +99,16 @@ def snow2dbt():
     #########################################
 
     if subcommand == 'profile':
-
-        profileFile = list_profile_available()
-        for key, value in profileFile.items():
-            logging.info("Liste of profile available")
+        profilePath = retrieve_profile_path()
+        with open(profilePath) as profileFile:
+                config = yaml.load(profileFile, Loader=yaml.FullLoader)
+                profileRows = []
+                i=1
+                for profile in config.keys():  
+                    profileRows.append([i, profile])
+                    i+=1
+                grid = tabulate(profileRows, headers=["Number", "Profile"], tablefmt="grid")
+                logging.info(f"Total profile available: {len(config)}\n\n{grid}")
 
     #########################################
     # Reverse subcommand table
