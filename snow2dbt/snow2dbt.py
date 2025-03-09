@@ -35,8 +35,10 @@ def parser_cmd():
     
     subparsers = parser.add_subparsers(dest="cmd", help="help")
 
-    reverse_parser = subparsers.add_parser('profile', help="Listing profil available in your dbt env")
-
+    profile_parser = subparsers.add_parser('profile', help="Listing profil available in your dbt env")
+    profile_parser.add_argument("--list", help="Listing a dbt profile available", action="store_true")
+    profile_parser.add_argument("--clear", help="Clear the cache used for dbt profile", action="store_true")
+    profile_parser.add_argument("--select", help="Selecting a dbt profile to use by default")
 
     reverse_parser = subparsers.add_parser('reverse', help="Reversing a table in snowflake")
     reverse_parser.add_argument("--account", help="Snowflake Account ID")
@@ -93,22 +95,47 @@ def snow2dbt():
 
     args = parser_cmd()
     subcommand = args.cmd
-    
+
     #########################################
     # profile subcommand handling
     #########################################
 
     if subcommand == 'profile':
         profilePath = retrieve_profile_path()
-        with open(profilePath) as profileFile:
+
+        if args.select:
+            with open(profilePath) as profileFile:
                 config = yaml.load(profileFile, Loader=yaml.FullLoader)
                 profileRows = []
                 i=1
-                for profile in config.keys():  
-                    profileRows.append([i, profile])
+                for profile in config.keys():
+                    if args.select == str(i):  
+                        logging.info(f"Selecting profil {i} - {profile}")
+                        with open('./.cache', 'w+') as file:
+                            file.write(args.select)
+                        break
                     i+=1
-                grid = tabulate(profileRows, headers=["Number", "Profile"], tablefmt="grid")
-                logging.info(f"Total profile available: {len(config)}\n\n{grid}")
+        elif args.clear:
+            if os.path.exists('./.cache'):
+                os.remove('./.cache')
+                logging.info("Identity cache has been clear successfully")
+        else:
+            if os.path.exists('./.cache'):
+                with open('./.cache', 'r') as file:
+                    defaultProfile = file.read()
+            else:
+                defaultProfile=None 
+
+            with open(profilePath) as profileFile:
+                    config = yaml.load(profileFile, Loader=yaml.FullLoader)
+                    profileRows = []
+                    i=1
+                    for profile in config.keys():
+                        profileRows.append([i, profile, config[profile]['outputs']['dev']['account'] , config[profile]['outputs']['dev']['user']  ,'X' if defaultProfile == str(i) else '' ])
+                        i+=1
+                    grid = tabulate(profileRows, headers=["Id", "Profile", 'Tenant', 'User',"Default Used"], tablefmt="grid")
+                    logging.info(f"Total profile available: {len(config)}\n\n{grid}")
+
 
     #########################################
     # Reverse subcommand table
@@ -121,7 +148,7 @@ def snow2dbt():
         else:
             logger.error("Invalid Snowflake table reference. <database>.<schema>.<table>")
             sys.exit(1)
-
+        
         leadingComma = args.leading_comma
 
         if args.auth_mode:
@@ -133,13 +160,19 @@ def snow2dbt():
                 with open(profilePath) as profileFile:
                     config = yaml.load(profileFile, Loader=yaml.FullLoader)
 
-                    if args.profile is None:    
-                        profile = list(config.keys())[0]
+                
+                    if args.profile is None:
+                        if os.path.exists('./.cache'):
+                            with open('./.cache', 'r') as file:
+                                defaultProfile = file.read()
+                        else:
+                            defaultProfile=0
+                        profile = list(config.keys())[defaultProfile]
                     else:
                         if args.profile not in config.keys():
                             raise ValueError('DBT Profile dosn''exist. Please fulfill a valid dbt profile.')
                         profile = args.profile
-                
+                        
                     account = config[profile]['outputs']['dev']['account']
                     username = config[profile]['outputs']['dev']['user']
                     password = config[profile]['outputs']['dev']['password']
