@@ -7,12 +7,69 @@ import yaml
 from re import sub
 import snowflake.connector
 from getpass import getpass
+import argcomplete
+
 
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s | %(levelname)s | %(message)s',
 )
 logger = logging.getLogger(__name__)
+
+
+
+#############################################################################
+#
+#
+# Handling autocompletion of snowflake
+#
+#
+#############################################################################
+
+def snowflake_connector_init():
+    """
+    
+    Return Snowflake Connector Interface 
+    
+    """
+
+    profilePath = retrieve_profile_path()
+    with open('./.cache', 'w+') as file:
+        with open(profilePath) as profileFile:
+                config = yaml.load(profileFile, Loader=yaml.FullLoader)
+
+                if os.path.exists('./.cache'):
+                    with open('./.cache', 'r') as file:
+                        defaultProfile = file.read()
+                else:
+                    defaultProfile=0
+                profile = list(config.keys())[defaultProfile]
+                account = config[profile]['outputs']['dev']['account']
+                username = config[profile]['outputs']['dev']['user']
+                password = config[profile]['outputs']['dev']['password']
+
+    conn = snowflake.connector.connect(
+    user=username, 
+    password=password,
+    account=account,
+    )
+    return conn
+
+def complete_table_name(prefix, parsed_args, parser, *args):
+    conn = snowflake_connector_init
+    available_tables = list_database(conn)
+    return [table for table in available_tables if table.startswith(prefix)]
+
+def list_database(conn: snowflake.connector.SnowflakeConnection):
+    """
+    Return list of database available with the profile
+    """
+
+    databaseRequest = "SHOW DATABASES;"
+
+    cursor = conn.cursor()
+    cursor.execute(databaseRequest)
+    return [ row['name'] for row in cursor]
 
 
 def snake_case(field: str):
@@ -45,7 +102,7 @@ def parser_cmd():
     reverse_parser.add_argument("--username", help="Snowflake User ID")
     reverse_parser.add_argument("--key", help="Snowflake Private Key (For keypair authentification)")
     reverse_parser.add_argument("--profile", help="DBT profile to used for authentification (Only  in auth_mode: dbt). If no profile, it'll take the first one in yaml config", default=None)
-    reverse_parser.add_argument("--target", help="Complete Snowflake table ID (<database>.<schema>.<table>)")
+    reverse_parser.add_argument("--target", help="Complete Snowflake table ID (<database>.<schema>.<table>)").completer = complete_table_name
     reverse_parser.add_argument("-l", "--lower", action="store_true", help="Lowercase type names in YAML file")
     reverse_parser.add_argument("--leading_comma", action="store_true", help="Leading comma")
     reverse_parser.add_argument("--snake", action="store_true", help="Convert field names to snake_case")
@@ -56,6 +113,7 @@ def parser_cmd():
     reverse_parser.add_argument("--output", help="Output folder of scripts. By default 'target/snow2dbt'",
                             default='target/snow2dbt')
     reverse_parser.add_argument("--auth_mode", help="Snowflake Authentification used. Default: dbt: will rely on your DBT profile file.", default='dbt')
+    argcomplete.autocomplete(reverse_parser)
 
     return parser.parse_args()
 
@@ -109,8 +167,10 @@ def snow2dbt():
                 profileRows = []
                 i=1
                 for profile in config.keys():
-                    if args.select == str(i):  
-                        logging.info(f"Selecting profil {i} - {profile}")
+                    if args.select == str(i): 
+                        username = config[profile]['outputs']['dev']['user']
+                        account = config[profile]['outputs']['dev']['account'] 
+                        logging.info(f"You're using profile {i} - {profile} with username {username} on account {account}")
                         with open('./.cache', 'w+') as file:
                             file.write(args.select)
                         break
@@ -160,11 +220,10 @@ def snow2dbt():
                 with open(profilePath) as profileFile:
                     config = yaml.load(profileFile, Loader=yaml.FullLoader)
 
-                
                     if args.profile is None:
                         if os.path.exists('./.cache'):
                             with open('./.cache', 'r') as file:
-                                defaultProfile = file.read()
+                                defaultProfile = int(file.read())-1
                         else:
                             defaultProfile=0
                         profile = list(config.keys())[defaultProfile]
@@ -271,7 +330,7 @@ def snow2dbt():
         sql_columns_separator = f"\n\t," if leadingComma else f",\n\t" 
         sql_columns_statement = sql_columns_separator.join([ field['name'] for field in columns])
         sql_from_statement = f"{database}.{schema}.{table}"
-        sql_output = f"SELECT\n\t{sql_columns_statement}\nFROM{sql_from_statement}"
+        sql_output = f"SELECT\n\t{sql_columns_statement}\nFROM {{ ref('{sql_from_statement}') }}"
         sql_output+=f"\n -- Replace by a ref() or source() value"
 
         with open(f"{output_path}/{table}.yaml", "w", encoding="utf-8") as yaml_file:

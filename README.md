@@ -31,6 +31,8 @@ pip install https://github.com/tensor365/snow2dbt
 
 If you have already a Snowflake Connection in your profile.yml , snow2dbt will use this identity to connect to your Snowflake tenant. If you've multiple identity in your profile.yml, you can specify the profile you want by using the argument: --profile . 
 
+To avoid supply always your connection information, you can use snow2dbt profile to configure a default profile to use. By using this command, you won't need to pass a profile when reversing a table.
+
 **Standard Authentication**
 
 If you want to use a standard authentification to Snowflake, you can specify following arguments: 
@@ -58,14 +60,35 @@ If you want to use a standard authentification to Snowflake, you can specify fol
 
 ### 3. Reversing a Snowflake Table into model/contract
 
-
 ```bash
 
-snow2dbt --target <databse>.<schema>.<table>
+snow2dbt reverse --target <database>.<schema>.<table>
 
 ```
 
 **CLI arguments**
+
+Profile Command
+
+```bash
+
+snow2dbt profile 
+
+```
+
+| Option                | Description                                                                             |
+|-----------------------|-----------------------------------------------------------------------------------------|
+| `--select`            | Select default dbt account profile you want to use                                      |
+| `--list`              | List all profile available in your dbt profile                                          |
+| `--clear`             | Clear profile cache. Resetting your identity                                            |
+
+Reverse Part Command
+
+```bash
+
+snow2dbt reverse 
+
+```
 
 | Option                | Description                                                                             |
 |-----------------------|-----------------------------------------------------------------------------------------|
@@ -86,5 +109,7 @@ snow2dbt --target <databse>.<schema>.<table>
 
 #### In development
 
-- [ ] February 2024: adding the capability to reverse entire schema
-- [ ] February/March 2024: adding the capability to generate SQL file by using Snowflake Lineage
+- [ ] End March 2025: adding the capability to reverse entire schema
+- [ ] February/March 2025: adding the capability to generate SQL file by using Snowflake Lineage
+- [X] March 2025: Adding profile cache Authentification
+- [ ] March 2025: Target autocompletion in --target argument (in development)
